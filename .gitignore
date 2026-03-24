@@ -5,7 +5,10 @@
 
 # 构建产物
 /bin/
+/server
 /dist/
+/web/node_modules/
+/web/dist/
 *.exe
 *.exe~
 *.dll

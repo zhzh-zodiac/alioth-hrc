@@ -13,6 +13,13 @@ type Config struct {
 	AppEnv   string
 	HTTPPort int
 
+	JWTSecret          string
+	JWTAccessTTLMin    int
+	JWTRefreshTTLHours int
+
+	// CORSAllowOrigins 逗号分隔，例如 http://localhost:5173,http://127.0.0.1:5173；空则使用开发默认。
+	CORSAllowOrigins string
+
 	MySQL MySQLConfig
 	Redis RedisConfig
 }
@@ -44,9 +51,13 @@ func Load() (*Config, error) {
 	_ = v.ReadInConfig()
 
 	cfg := &Config{
-		AppName:  v.GetString("APP_NAME"),
-		AppEnv:   v.GetString("APP_ENV"),
-		HTTPPort: v.GetInt("HTTP_PORT"),
+		AppName:            v.GetString("APP_NAME"),
+		AppEnv:             v.GetString("APP_ENV"),
+		HTTPPort:           v.GetInt("HTTP_PORT"),
+		JWTSecret:          v.GetString("JWT_SECRET"),
+		JWTAccessTTLMin:    v.GetInt("JWT_ACCESS_TTL_MIN"),
+		JWTRefreshTTLHours: v.GetInt("JWT_REFRESH_TTL_HOURS"),
+		CORSAllowOrigins:  v.GetString("CORS_ALLOW_ORIGINS"),
 		MySQL: MySQLConfig{
 			DSN:                v.GetString("MYSQL_DSN"),
 			MaxIdleConns:       v.GetInt("MYSQL_MAX_IDLE_CONNS"),
@@ -72,6 +83,8 @@ func setDefaults(v *viper.Viper) {
 	v.SetDefault("APP_NAME", "alioth-hrc")
 	v.SetDefault("APP_ENV", "dev")
 	v.SetDefault("HTTP_PORT", 8080)
+	v.SetDefault("JWT_ACCESS_TTL_MIN", 15)
+	v.SetDefault("JWT_REFRESH_TTL_HOURS", 168)
 
 	v.SetDefault("MYSQL_MAX_IDLE_CONNS", 10)
 	v.SetDefault("MYSQL_MAX_OPEN_CONNS", 50)
@@ -91,9 +104,40 @@ func (c *Config) Validate() error {
 	if c.HTTPPort <= 0 {
 		return fmt.Errorf("HTTP_PORT must be positive")
 	}
+	if c.JWTSecret == "" {
+		return fmt.Errorf("JWT_SECRET is required")
+	}
+	if len(c.JWTSecret) < 16 {
+		return fmt.Errorf("JWT_SECRET must be at least 16 characters")
+	}
+	if c.JWTAccessTTLMin <= 0 {
+		return fmt.Errorf("JWT_ACCESS_TTL_MIN must be positive")
+	}
+	if c.JWTRefreshTTLHours <= 0 {
+		return fmt.Errorf("JWT_REFRESH_TTL_HOURS must be positive")
+	}
 	return nil
 }
 
 func (c *Config) MySQLConnMaxLifetime() time.Duration {
 	return time.Duration(c.MySQL.ConnMaxLifetimeMin) * time.Minute
+}
+
+// CORSOriginList 返回允许的浏览器 Origin 列表。
+func (c *Config) CORSOriginList() []string {
+	s := strings.TrimSpace(c.CORSAllowOrigins)
+	if s == "" {
+		return []string{"http://localhost:5173", "http://127.0.0.1:5173"}
+	}
+	var out []string
+	for _, p := range strings.Split(s, ",") {
+		p = strings.TrimSpace(p)
+		if p != "" {
+			out = append(out, p)
+		}
+	}
+	if len(out) == 0 {
+		return []string{"http://localhost:5173", "http://127.0.0.1:5173"}
+	}
+	return out
 }

@@ -14,6 +14,7 @@ import (
 	"alioth-hrc/internal/db"
 	"alioth-hrc/internal/model"
 	"alioth-hrc/internal/router"
+	"alioth-hrc/internal/service"
 
 	"github.com/redis/go-redis/v9"
 )
@@ -42,11 +43,21 @@ func New(ctx context.Context) (*App, error) {
 		return nil, fmt.Errorf("connect redis: %w", err)
 	}
 
-	if err := gdb.AutoMigrate(&model.User{}); err != nil {
+	if err := gdb.AutoMigrate(
+		&model.User{},
+		&model.Contact{},
+		&model.Ledger{},
+		&model.GiftCategory{},
+		&model.GiftRecord{},
+	); err != nil {
 		return nil, fmt.Errorf("mysql migrate: %w", err)
 	}
 
-	engine := router.New(cfg.AppEnv, sqlDB, rdb)
+	if err := service.SeedGiftCategories(gdb); err != nil {
+		return nil, fmt.Errorf("seed gift categories: %w", err)
+	}
+
+	engine := router.New(cfg, gdb, sqlDB, rdb)
 
 	srv := &http.Server{
 		Addr:              fmt.Sprintf(":%d", cfg.HTTPPort),

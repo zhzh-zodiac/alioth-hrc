@@ -1,0 +1,1278 @@
+basePath: /api/v1
+definitions:
+  alioth-hrc_internal_model.Contact:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      relation_note:
+        type: string
+      remark:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  alioth-hrc_internal_model.GiftCategory:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      is_system:
+        type: boolean
+      name:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  alioth-hrc_internal_model.GiftDirection:
+    enum:
+    - give
+    - receive
+    type: string
+    x-enum-varnames:
+    - DirectionGive
+    - DirectionReceive
+  alioth-hrc_internal_model.GiftRecord:
+    properties:
+      amount_cents:
+        type: integer
+      category_id:
+        type: integer
+      contact_id:
+        type: integer
+      created_at:
+        type: string
+      direction:
+        $ref: '#/definitions/alioth-hrc_internal_model.GiftDirection'
+      id:
+        type: integer
+      ledger_id:
+        type: integer
+      note:
+        type: string
+      occurred_on:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  alioth-hrc_internal_model.Ledger:
+    properties:
+      created_at:
+        type: string
+      id:
+        type: integer
+      is_default:
+        type: boolean
+      name:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  alioth-hrc_internal_service.ContactCreate:
+    properties:
+      name:
+        maxLength: 200
+        type: string
+      relation_note:
+        maxLength: 200
+        type: string
+      remark:
+        maxLength: 500
+        type: string
+    required:
+    - name
+    type: object
+  alioth-hrc_internal_service.ContactStatRow:
+    properties:
+      balance_cents:
+        type: integer
+      contact_id:
+        type: integer
+      last_occurred_on:
+        type: string
+      total_give_cents:
+        type: integer
+      total_receive_cents:
+        type: integer
+    type: object
+  alioth-hrc_internal_service.ContactUpdate:
+    properties:
+      name:
+        maxLength: 200
+        type: string
+      relation_note:
+        maxLength: 200
+        type: string
+      remark:
+        maxLength: 500
+        type: string
+    required:
+    - name
+    type: object
+  alioth-hrc_internal_service.GiftCategoryCreate:
+    properties:
+      name:
+        maxLength: 100
+        type: string
+    required:
+    - name
+    type: object
+  alioth-hrc_internal_service.GiftRecordCreate:
+    properties:
+      amount_cents:
+        minimum: 1
+        type: integer
+      category_id:
+        type: integer
+      contact_id:
+        type: integer
+      direction:
+        enum:
+        - give
+        - receive
+        type: string
+      ledger_id:
+        type: integer
+      note:
+        maxLength: 1000
+        type: string
+      occurred_on:
+        description: YYYY-MM-DD
+        type: string
+    required:
+    - amount_cents
+    - category_id
+    - contact_id
+    - direction
+    - ledger_id
+    - occurred_on
+    type: object
+  alioth-hrc_internal_service.GiftRecordUpdate:
+    properties:
+      amount_cents:
+        minimum: 1
+        type: integer
+      category_id:
+        type: integer
+      contact_id:
+        type: integer
+      direction:
+        enum:
+        - give
+        - receive
+        type: string
+      ledger_id:
+        type: integer
+      note:
+        maxLength: 1000
+        type: string
+      occurred_on:
+        type: string
+    required:
+    - amount_cents
+    - category_id
+    - contact_id
+    - direction
+    - ledger_id
+    - occurred_on
+    type: object
+  alioth-hrc_internal_service.LedgerCreate:
+    properties:
+      name:
+        maxLength: 200
+        type: string
+    required:
+    - name
+    type: object
+  alioth-hrc_internal_service.LedgerUpdate:
+    properties:
+      name:
+        maxLength: 200
+        type: string
+    required:
+    - name
+    type: object
+  alioth-hrc_internal_service.LoginInput:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  alioth-hrc_internal_service.LogoutInput:
+    properties:
+      refresh_token:
+        type: string
+    required:
+    - refresh_token
+    type: object
+  alioth-hrc_internal_service.MonthlyStatRow:
+    properties:
+      give_cents:
+        type: integer
+      receive_cents:
+        type: integer
+      year_month:
+        type: string
+    type: object
+  alioth-hrc_internal_service.RefreshInput:
+    properties:
+      refresh_token:
+        type: string
+    required:
+    - refresh_token
+    type: object
+  alioth-hrc_internal_service.RegisterInput:
+    properties:
+      email:
+        type: string
+      name:
+        maxLength: 100
+        type: string
+      password:
+        maxLength: 72
+        minLength: 8
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  alioth-hrc_internal_service.SummaryResult:
+    properties:
+      balance_cents:
+        type: integer
+      ledger_id:
+        type: integer
+      monthly:
+        items:
+          $ref: '#/definitions/alioth-hrc_internal_service.MonthlyStatRow'
+        type: array
+      total_give_cents:
+        type: integer
+      total_receive_cents:
+        type: integer
+      year:
+        type: integer
+    type: object
+  alioth-hrc_internal_service.TokenPair:
+    properties:
+      access_token:
+        type: string
+      expires_in:
+        type: integer
+      refresh_expires_in:
+        type: integer
+      refresh_token:
+        type: string
+      token_type:
+        type: string
+    type: object
+  internal_handler.ContactListResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/alioth-hrc_internal_model.Contact'
+        type: array
+      page:
+        type: integer
+      page_size:
+        type: integer
+      total:
+        type: integer
+    type: object
+  internal_handler.ErrorJSON:
+    properties:
+      error:
+        type: string
+    type: object
+  internal_handler.GiftCategoryListResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/alioth-hrc_internal_model.GiftCategory'
+        type: array
+    type: object
+  internal_handler.GiftRecordListResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/alioth-hrc_internal_model.GiftRecord'
+        type: array
+      page:
+        type: integer
+      page_size:
+        type: integer
+      total:
+        type: integer
+    type: object
+  internal_handler.LedgerListResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/alioth-hrc_internal_model.Ledger'
+        type: array
+    type: object
+  internal_handler.OKStatus:
+    properties:
+      status:
+        type: string
+    type: object
+  internal_handler.RegisterResponse:
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  internal_handler.ReminderListResponse:
+    properties:
+      hint:
+        type: string
+      items:
+        items: {}
+        type: array
+    type: object
+  internal_handler.StatsContactsResponse:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/alioth-hrc_internal_service.ContactStatRow'
+        type: array
+    type: object
+info:
+  contact: {}
+  description: 人情往来记账后端：认证、联系人、账本、礼金分类与流水、统计等。
+  title: alioth-hrc API
+  version: "1.0"
+paths:
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 登录信息
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/alioth-hrc_internal_service.LoginInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/alioth-hrc_internal_service.TokenPair'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+      summary: 登录
+      tags:
+      - auth
+  /auth/logout:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 刷新令牌
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/alioth-hrc_internal_service.LogoutInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.OKStatus'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+      summary: 登出
+      tags:
+      - auth
+  /auth/refresh:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 刷新令牌
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/alioth-hrc_internal_service.RefreshInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/alioth-hrc_internal_service.TokenPair'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+      summary: 刷新令牌
+      tags:
+      - auth
+  /auth/register:
+    post:
+      consumes:
+      - application/json
+      description: 创建账号并自动创建默认账本；成功后返回用户基本信息。
+      parameters:
+      - description: 注册信息
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/alioth-hrc_internal_service.RegisterInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/internal_handler.RegisterResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+      summary: 用户注册
+      tags:
+      - auth
+  /contacts:
+    get:
+      parameters:
+      - description: 按姓名/关系模糊搜索
+        in: query
+        name: q
+        type: string
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页条数
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.ContactListResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+      security:
+      - BearerAuth: []
+      summary: 联系人列表
+      tags:
+      - contacts
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 联系人
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/alioth-hrc_internal_service.ContactCreate'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/alioth-hrc_internal_model.Contact'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+      security:
+      - BearerAuth: []
+      summary: 创建联系人
+      tags:
+      - contacts
+  /contacts/{id}:
+    delete:
+      parameters:
+      - description: 联系人 ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.OKStatus'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+      security:
+      - BearerAuth: []
+      summary: 删除联系人
+      tags:
+      - contacts
+    get:
+      parameters:
+      - description: 联系人 ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/alioth-hrc_internal_model.Contact'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+      security:
+      - BearerAuth: []
+      summary: 联系人详情
+      tags:
+      - contacts
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: 联系人 ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 联系人
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/alioth-hrc_internal_service.ContactUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/alioth-hrc_internal_model.Contact'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+      security:
+      - BearerAuth: []
+      summary: 更新联系人
+      tags:
+      - contacts
+  /gift-categories:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.GiftCategoryListResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+      security:
+      - BearerAuth: []
+      summary: 礼金分类列表
+      tags:
+      - gift-categories
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 分类
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/alioth-hrc_internal_service.GiftCategoryCreate'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/alioth-hrc_internal_model.GiftCategory'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+      security:
+      - BearerAuth: []
+      summary: 创建礼金分类
+      tags:
+      - gift-categories
+  /gift-categories/{id}:
+    delete:
+      parameters:
+      - description: 分类 ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.OKStatus'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+      security:
+      - BearerAuth: []
+      summary: 删除礼金分类
+      tags:
+      - gift-categories
+  /gift-records:
+    get:
+      parameters:
+      - description: 联系人 ID
+        in: query
+        name: contact_id
+        type: integer
+      - description: 账本 ID
+        in: query
+        name: ledger_id
+        type: integer
+      - description: 分类 ID
+        in: query
+        name: category_id
+        type: integer
+      - description: '方向: give 或 receive'
+        in: query
+        name: direction
+        type: string
+      - description: 开始日期 YYYY-MM-DD
+        in: query
+        name: from_date
+        type: string
+      - description: 结束日期 YYYY-MM-DD
+        in: query
+        name: to_date
+        type: string
+      - description: 页码
+        in: query
+        name: page
+        type: integer
+      - description: 每页条数
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.GiftRecordListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+      security:
+      - BearerAuth: []
+      summary: 礼金流水列表
+      tags:
+      - gift-records
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 流水
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/alioth-hrc_internal_service.GiftRecordCreate'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/alioth-hrc_internal_model.GiftRecord'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+      security:
+      - BearerAuth: []
+      summary: 创建礼金流水
+      tags:
+      - gift-records
+  /gift-records/{id}:
+    delete:
+      parameters:
+      - description: 流水 ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.OKStatus'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+      security:
+      - BearerAuth: []
+      summary: 删除礼金流水
+      tags:
+      - gift-records
+    get:
+      parameters:
+      - description: 流水 ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/alioth-hrc_internal_model.GiftRecord'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+      security:
+      - BearerAuth: []
+      summary: 礼金流水详情
+      tags:
+      - gift-records
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: 流水 ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 流水
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/alioth-hrc_internal_service.GiftRecordUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/alioth-hrc_internal_model.GiftRecord'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+      security:
+      - BearerAuth: []
+      summary: 更新礼金流水
+      tags:
+      - gift-records
+  /gift-records/export.csv:
+    get:
+      parameters:
+      - description: 联系人 ID
+        in: query
+        name: contact_id
+        type: integer
+      - description: 账本 ID
+        in: query
+        name: ledger_id
+        type: integer
+      - description: 分类 ID
+        in: query
+        name: category_id
+        type: integer
+      - description: 方向
+        in: query
+        name: direction
+        type: string
+      - description: 开始日期 YYYY-MM-DD
+        in: query
+        name: from_date
+        type: string
+      - description: 结束日期 YYYY-MM-DD
+        in: query
+        name: to_date
+        type: string
+      produces:
+      - text/csv
+      responses:
+        "200":
+          description: CSV 文件
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+      security:
+      - BearerAuth: []
+      summary: 导出礼金流水 CSV
+      tags:
+      - gift-records
+  /ledgers:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.LedgerListResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+      security:
+      - BearerAuth: []
+      summary: 账本列表
+      tags:
+      - ledgers
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 账本
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/alioth-hrc_internal_service.LedgerCreate'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/alioth-hrc_internal_model.Ledger'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+      security:
+      - BearerAuth: []
+      summary: 创建账本
+      tags:
+      - ledgers
+  /ledgers/{id}:
+    delete:
+      parameters:
+      - description: 账本 ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.OKStatus'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+      security:
+      - BearerAuth: []
+      summary: 删除账本
+      tags:
+      - ledgers
+    get:
+      parameters:
+      - description: 账本 ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/alioth-hrc_internal_model.Ledger'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+      security:
+      - BearerAuth: []
+      summary: 账本详情
+      tags:
+      - ledgers
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: 账本 ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 账本
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/alioth-hrc_internal_service.LedgerUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/alioth-hrc_internal_model.Ledger'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+      security:
+      - BearerAuth: []
+      summary: 更新账本
+      tags:
+      - ledgers
+  /reminders:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.ReminderListResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+      security:
+      - BearerAuth: []
+      summary: 提醒列表（占位）
+      tags:
+      - reminders
+  /stats/contacts:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_handler.StatsContactsResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+      security:
+      - BearerAuth: []
+      summary: 按联系人统计
+      tags:
+      - stats
+  /stats/summary:
+    get:
+      parameters:
+      - description: 账本 ID
+        in: query
+        name: ledger_id
+        type: integer
+      - description: 筛选年份（不传则按全部时间）
+        in: query
+        name: year
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/alioth-hrc_internal_service.SummaryResult'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_handler.ErrorJSON'
+      security:
+      - BearerAuth: []
+      summary: 汇总统计
+      tags:
+      - stats
+securityDefinitions:
+  BearerAuth:
+    description: 访问令牌，格式：Bearer {access_token}
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
