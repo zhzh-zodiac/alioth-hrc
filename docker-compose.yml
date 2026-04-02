@@ -1,0 +1,97 @@
+# 一键启动：MySQL + Redis + Go API + Nginx 托管前端
+# 用法：
+#   cp docker-compose.env.example .env.compose
+#   # 编辑 .env.compose 中的 JWT_SECRET
+#   docker compose --env-file .env.compose up -d --build
+# 浏览器访问：http://localhost:8080 （前端）；API 同域：/api/v1/...
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: alioth-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootsecret}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-alioth_hrc}
+      MYSQL_USER: ${MYSQL_USER:-alioth}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-aliothsecret}
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$$MYSQL_ROOT_PASSWORD\" || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+  redis:
+    image: redis:7-alpine
+    container_name: alioth-redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: alioth-api
+    restart: unless-stopped
+    environment:
+      APP_NAME: alioth-hrc
+      APP_ENV: ${APP_ENV:-prod}
+      HTTP_PORT: "8080"
+      JWT_SECRET: ${JWT_SECRET:-docker-compose-dev-secret-min-16-chars}
+      JWT_ACCESS_TTL_MIN: ${JWT_ACCESS_TTL_MIN:-15}
+      JWT_REFRESH_TTL_HOURS: ${JWT_REFRESH_TTL_HOURS:-168}
+      MYSQL_DSN: ${MYSQL_USER:-alioth}:${MYSQL_PASSWORD:-aliothsecret}@tcp(mysql:3306)/${MYSQL_DATABASE:-alioth_hrc}?charset=utf8mb4&parseTime=True&loc=Local
+      MYSQL_MAX_IDLE_CONNS: "10"
+      MYSQL_MAX_OPEN_CONNS: "50"
+      MYSQL_CONN_MAX_LIFETIME_MIN: "30"
+      REDIS_ADDR: redis:6379
+      REDIS_USERNAME: ""
+      REDIS_PASSWORD: ""
+      REDIS_DB: "0"
+      CORS_ALLOW_ORIGINS: ${CORS_ALLOW_ORIGINS:-http://localhost:8080,http://127.0.0.1:8080}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    expose:
+      - "8080"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/healthz"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 40s
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: ""
+    container_name: alioth-web
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-8080}:80"
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  mysql_data:
+  redis_data:

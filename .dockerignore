@@ -1,0 +1,22 @@
+.git
+.gitignore
+**/.DS_Store
+.idea
+.vscode
+*.swp
+.env
+.env.*
+!.env.example
+
+# 本地二进制
+/server
+/bin
+*.exe
+*.test
+
+# 前端由 web/Dockerfile 单独构建；根镜像构建不需要 web 源码
+web/
+
+# 文档与脚本
+*.md
+!README.md
